@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compiler Lab Helper: Lex & YACC</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A tab-based single-page application with four main sections: Introduction, Lex, YACC, and Cycle II Problems. This structure guides the user through a logical learning path, from foundational concepts to practical application. The 'Problems' section uses sub-navigation for each question, presenting a clear explanation, solution code, and an interactive JS-powered demo to simulate the tool's behavior and reinforce learning. This is more user-friendly than a static document as it provides immediate, interactive feedback. -->
+    <!-- Visualization & Content Choices: Report Info: Lex/YACC structure. Goal: Organize/Inform. Method: HTML/CSS diagram showing Lex->YACC workflow. Interaction: Static visual. Justification: Clarifies the relationship between the two tools. | Report Info: Lab problem (e.g., valid variable). Goal: Inform/Interact. Method: HTML code block for the solution, JS-powered interactive demo (input/output). Interaction: User types input, clicks 'Run', sees simulated output. Justification: Allows active learning and testing of the concept without needing a local compiler setup. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Compiler Lab Helper</h1>
+            <p class="text-lg text-gray-600 mt-2">Your Interactive Guide to Lex & YACC for Cycle II</p>
+        </header>
+
+        <nav class="flex justify-center border-b-2 border-gray-200 mb-8">
+            <button data-target="intro" class="nav-button active text-lg font-medium py-4 px-6">Introduction</button>
+            <button data-target="lex" class="nav-button text-lg font-medium py-4 px-6">Learn Lex</button>
+            <button data-target="yacc" class="nav-button text-lg font-medium py-4 px-6">Learn YACC</button>
+            <button data-target="problems" class="nav-button text-lg font-medium py-4 px-6">Cycle II Problems</button>
+        </nav>
+
+        <main>
+            <!-- Introduction Section -->
+            <section id="intro" class="content-section active">
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold mb-4 text-gray-700">What are Lex and YACC?</h2>
+                    <p class="text-lg mb-6">Lex and YACC are powerful tools for building compilers and interpreters. They help automate the first two major phases of compilation: lexical analysis and syntax analysis (parsing).</p>
+                    <div class="p-6 border border-gray-200 rounded-lg">
+                        <h3 class="text-2xl font-semibold mb-4 text-center">The Compilation Pipeline</h3>
+                        <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <p class="font-semibold">Source Code</p>
+                                <p class="text-sm">(e.g., your C file)</p>
+                            </div>
+                            <div class="text-2xl font-mono text-blue-500">&rarr;</div>
+                            <div class="p-4 bg-green-100 border-2 border-green-500 rounded-lg shadow-md">
+                                <p class="font-bold text-lg">Lex (Lexical Analyzer)</p>
+                                <p class="text-sm">Scans code and produces tokens</p>
+                            </div>
+                            <div class="text-2xl font-mono text-green-500">&rarr;</div>
+                             <div class="p-4 bg-green-50 rounded-lg">
+                                <p class="font-semibold">Tokens</p>
+                                <p class="text-sm">('int', 'main', '(', ')', ...)</p>
+                            </div>
+                            <div class="text-2xl font-mono text-green-500">&rarr;</div>
+                            <div class="p-4 bg-purple-100 border-2 border-purple-500 rounded-lg shadow-md">
+                                <p class="font-bold text-lg">YACC (Parser)</p>
+                                <p class="text-sm">Checks grammar and builds a syntax tree</p>
+                            </div>
+                            <div class="text-2xl font-mono text-purple-500">&rarr;</div>
+                            <div class="p-4 bg-purple-50 rounded-lg">
+                                <p class="font-semibold">Executable Code</p>
+                                <p class="text-sm">(Final Program)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="mt-8 space-y-4 text-lg">
+                        <li><strong class="text-green-600">Lex (Lexical Analyzer Generator):</strong> Its job is to read your source code character by character and group them into "tokens". A token is a meaningful unit, like a keyword (`int`), an identifier (`myVar`), an operator (`+`), or a number (`123`). It uses patterns (regular expressions) to identify these tokens.</li>
+                        <li><strong class="text-purple-600">YACC (Yet Another Compiler-Compiler):</strong> Its job is to take the stream of tokens from Lex and check if they form a valid sequence according to a grammar you provide. This is like checking if an English sentence is grammatically correct. If the structure is correct, it can perform actions, like building an Abstract Syntax Tree or executing code.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Learn Lex Section -->
+            <section id="lex" class="content-section">
+                 <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold mb-4 text-gray-700">Understanding Lex</h2>
+                    <p class="text-lg mb-6">A Lex program (usually a `.l` file) has a specific three-part structure, separated by `%%`.</p>
+                    <div class="code-block mb-6">
+<pre>
+... definitions ...
+%%
+... rules ...
+%%
+... user C code ...
+</pre>
+                    </div>
+                    <ul class="space-y-4 text-lg">
+                        <li><strong>Definitions:</strong> This section is for defining variables, importing headers (`#include`), and creating name substitutions for complex regular expressions.</li>
+                        <li><strong>Rules:</strong> This is the core of the Lex program. Each rule has two parts: a <span class="font-mono bg-gray-200 px-1 rounded">pattern</span> (a regular expression) and an <span class="font-mono bg-gray-200 px-1 rounded">action</span> (a piece of C code to execute when the pattern is matched).</li>
+                        <li><strong>User C Code:</strong> This section contains any additional C functions you need, including the `main()` function which typically calls `yylex()` to start the scanning process.</li>
+                    </ul>
+                    <h3 class="text-2xl font-bold mt-8 mb-4 text-gray-700">Example: Counting Vowels and Consonants</h3>
+                    <p class="mb-4">Here's a simple Lex program that demonstrates these concepts. It reads text and counts how many vowels and consonants it finds.</p>
+                    <div class="code-block">
+<pre>
+%{
+    int vowels = 0;
+    int consonants = 0;
+%}
+%%
+[aeiouAEIOU]    { vowels++; }
+[a-zA-Z]        { consonants++; }
+\n              { /* Ignore newlines */ }
+.               { /* Ignore all other characters */ }
+%%
+int main() {
+    printf("Enter some text:\n");
+    yylex();
+    printf("Number of vowels: %d\n", vowels);
+    printf("Number of consonants: %d\n", consonants);
+    return 0;
+}
+
+int yywrap() {
+    return 1;
+}
+</pre>
+                    </div>
+                 </div>
+            </section>
+
+            <!-- Learn YACC Section -->
+            <section id="yacc" class="content-section">
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-3xl font-bold mb-4 text-gray-700">Understanding YACC</h2>
+                    <p class="text-lg mb-6">A YACC program (usually a `.y` file) also has the three-part structure, but its purpose is to define a grammar.</p>
+                     <div class="code-block mb-6">
+<pre>
+... definitions ...
+%%
+... grammar rules ...
+%%
+... user C code ...
+</pre>
+                    </div>
+                    <ul class="space-y-4 text-lg">
+                        <li><strong>Definitions:</strong> Here you declare the tokens that YACC will receive from Lex (using `%token`). You can also include C headers and define the starting rule of the grammar.</li>
+                        <li><strong>Grammar Rules:</strong> This section defines the syntax of your language using a form similar to BNF (Backus-Naur Form). A rule is made of a non-terminal, a colon, and a sequence of terminals (tokens) and non-terminals. Actions in `{}` can be added to execute C code when a rule is successfully recognized.</li>
+                        <li><strong>User C Code:</strong> This contains your `main()` function, an error reporting function `yyerror()`, and any other helper functions. The `main` function will call `yyparse()` to start the parsing.</li>
+                    </ul>
+                     <h3 class="text-2xl font-bold mt-8 mb-4 text-gray-700">Example: Simple Arithmetic Expression Grammar</h3>
+                    <p class="mb-4">This YACC program defines a grammar for simple addition expressions like `5+10+3`.</p>
+                    <div class="code-block">
+<pre>
+%{
+#include &lt;stdio.h&gt;
+void yyerror(char *s);
+int yylex();
+%}
+
+%token NUMBER
+
+%%
+program:
+    expression { printf("Valid Expression\n"); }
+    ;
+
+expression:
+    NUMBER
+    | expression '+' NUMBER
+    ;
+%%
+
+void yyerror(char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+}
+
+int main() {
+    printf("Enter an expression (e.g., 1+2+3):\n");
+    yyparse();
+    return 0;
+}
+
+/* Note: A corresponding Lex file is needed to provide the NUMBER token */
+</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Problems Section -->
+            <section id="problems" class="content-section">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="w-full md:w-1/4">
+                        <h3 class="text-xl font-bold mb-4">Cycle II Problems</h3>
+                        <div id="problem-nav" class="flex flex-col space-y-2">
+                            <button data-problem="1" class="problem-nav-button text-left w-full px-4 py-2 rounded-md bg-white hover:bg-blue-100 transition">1. Lexical Analyzer in C</button>
+                            <button data-problem="2" class="problem-nav-button text-left w-full px-4 py-2 rounded-md bg-white hover:bg-blue-100 transition">2. Lex: String Recognition</button>
+                            <button data-problem="3" class="problem-nav-button text-left w-full px-4 py-2 rounded-md bg-white hover:bg-blue-100 transition">3. YACC: Valid Variable</button>
+                            <button data-problem="4" class="problem-nav-button text-left w-full px-4 py-2 rounded-md bg-white hover:bg-blue-100 transition">4. LEX & YACC: Calculator</button>
+                            <button data-problem="5" class="problem-nav-button text-left w-full px-4 py-2 rounded-md bg-white hover:bg-blue-100 transition">5. BNF to YACC & AST</button>
+                            <button data-problem="6" class="problem-nav-button text-left w-full px-4 py-2 rounded-md bg-white hover:bg-blue-100 transition">6. YACC: 'for' loop syntax</button>
+                        </div>
+                    </div>
+                    <div id="problem-content" class="w-full md:w-3/4 bg-white p-8 rounded-lg shadow-lg">
+                        <!-- Problem content is dynamically inserted by script.js -->
+                        <div class="text-center text-gray-500">
+                            <p class="text-2xl">Select a problem from the left to get started.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- The script is now in an external file -->
+    <script src="script.js" defer></script>
+</body>
+</html>

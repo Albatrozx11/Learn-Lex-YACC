@@ -1,0 +1,53 @@
+        body {
+            background-color: #F5F5F5; /* Warm Neutral: Light Gray */
+            color: #333333;
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://rsms.me/inter/inter.css');
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active {
+            border-bottom-color: #4A90E2; /* Accent: Blue */
+            color: #4A90E2;
+        }
+        .code-block {
+            background-color: #2D2D2D; /* Dark Gray for code */
+            color: #F8F8F2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            position: relative;
+        }
+        .problem-nav-button.active {
+            background-color: #4A90E2;
+            color: white;
+        }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .gemini-btn {
+            background: linear-gradient(45deg, #4A90E2, #8169F2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+        .gemini-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .explanation-box {
+            background-color: #EFF6FF; /* Light blue */
+            border-left: 4px solid #4A90E2;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.25rem;
+            white-space: pre-wrap;
+            font-family: 'Fira Code', monospace;
+            color: #1E3A8A;
+        }
