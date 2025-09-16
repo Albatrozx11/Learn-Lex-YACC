@@ -1,16 +1,13 @@
 /**
  * @file This script handles all the interactive logic for the Compiler Lab Helper application.
  * It manages tabbed navigation, dynamically renders problem content, and integrates
- * with the Gemini API to provide AI-powered code explanations and grammar conversions.
+ * with a secure serverless function to provide AI-powered features.
  */
 
 // --- 1. CONSTANTS & DOM ELEMENTS ---
 
-// IMPORTANT: Add your Gemini API Key here for the application to work when hosted.
-// Get a free key from Google AI Studio: https://aistudio.google.com/app/apikey
-const API_KEY = "AIzaSyATJYlOIRBIY5VltCmoU-Sz3-bL_Ez7RXI"; 
-
-// Main UI elements that we will interact with.
+// The API Key has been REMOVED from the client-side for security.
+// All API calls now go through our secure Netlify function.
 const mainNav = document.querySelector('nav');
 const contentSections = document.querySelectorAll('.content-section');
 const problemNav = document.getElementById('problem-nav');
@@ -405,30 +402,30 @@ cc y.tab.c lex.yy.c -o for_checker
 // --- 3. API COMMUNICATION ---
 
 /**
- * Calls the Gemini API to get a response for a given prompt.
+ * Calls our secure serverless function to get a response for a given prompt.
  * @param {string} prompt The prompt to send to the Gemini model.
  * @returns {Promise<string>} A promise that resolves to the model's text response.
  */
 async function callGemini(prompt) {
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
-    const payload = { contents: [{ parts: [{ text: prompt }] }] };
+    // This is the endpoint for our Netlify function.
+    const API_ENDPOINT = '/.netlify/functions/gemini';
 
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(API_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({ prompt }), // Send the prompt in the request body
         });
 
         if (!response.ok) {
-            throw new Error(`API call failed with status: ${response.status}. Make sure you have entered a valid API Key.`);
+            throw new Error(`Serverless function failed with status: ${response.status}`);
         }
 
         const result = await response.json();
         const candidate = result.candidates?.[0];
         return candidate?.content?.parts?.[0]?.text || "Sorry, the response format was unexpected.";
     } catch (error) {
-        console.error("Gemini API call error:", error);
+        console.error("API call error:", error);
         return `An error occurred: ${error.message}. Please check the console.`;
     }
 }
@@ -557,3 +554,4 @@ function initialize() {
 
 // Wait for the DOM to be fully loaded before running the initialization code.
 document.addEventListener('DOMContentLoaded', initialize);
+
